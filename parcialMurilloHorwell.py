@@ -2,10 +2,12 @@ import csv
 import os.path
 
 
+
+# ------- Funcion crea archivo con csv.DictWriter
 def creaArchivo(nombre, lista):
     cabecera = ["Legajo", "Apellido" , "Nombre" , "Total Vacaciones"]
 
-    with open(f"{nombre}.csv", "w") as newF:
+    with open(nombre, "w") as newF:
         newFile = csv.DictWriter(newF,fieldnames=cabecera)
 
         newFile.writeheader()
@@ -15,30 +17,114 @@ def creaArchivo(nombre, lista):
     print(f"\t{nombre}.csv ha sido creado con exito. ")
     return
 
+# ------- Funcion edita archivo con csv.DictWriter sin eliminar lo que hay previamente.
+def editarArchivo(nombre, lista):
+    cabecera = ["Legajo", "Apellido" , "Nombre" , "Total Vacaciones"]
+
+    with open(nombre, "a") as newF:
+        newFile = csv.DictWriter(newF,fieldnames=cabecera)
+
+        newFile.writerows(lista)
+
+
+    print(f"\t{nombre}.csv ha sido EDITADO con exito. ")
+    return
+
+# ------- Funcion borra y sobreescribe archivo con csv.DictWriter eliminando y reemplazando lo que hay previamente.
+
+def sobreescribeArchivo(nombre, lista):
+    cabecera = ["Legajo", "Apellido" , "Nombre" , "Total Vacaciones"]
+
+    with open(nombre, "w") as newF:
+        newFile = csv.DictWriter(newF,fieldnames=cabecera)
+
+        newFile.writeheader()
+        newFile.writerows(lista)
+
+
+    print(f"\t{nombre}.csv ha sido SOBREESCRITO con exito. ")
+    return
 
 
 def cargarVacaciones():
     nombreNew = input("\t\nNombre para el archivo .csv: ")
+    nombreNew = f"{nombreNew}.csv"
     cabecera = ["Legajo", "Apellido" , "Nombre" , "Total Vacaciones"]
     listaCarga =[]
     cargar = ""
 
-    while cargar != "n":
-        diccCarga = {"Total Vacaciones":0}
-        for i in cabecera:
-            diccCarga[i] = (input(f"\n\tIngrese {i}: "))
-            try:
-                int(diccCarga["Legajo"])
-                int(diccCarga["Total Vacaciones"])
+    archivoExistente = os.path.isfile(nombreNew)
+    if archivoExistente == True:
+        print("\t\nEl archivo ya existe..")
+        menuCarga = input("\t\n1: Agregar legajo. \n2: Sobreescribirlo. \n3: Volver a Menu principal \n: ")
+
+        if int(menuCarga)== 1:
+            print("Menu 1 agregar legajo.")
+            while cargar != "n":
+                diccCarga = {"Total Vacaciones":0}
+                for i in cabecera:
+                    diccCarga[i] = (input(f"\n\tIngrese {i}: "))
+                    try:
+                        int(diccCarga["Legajo"])
+                        int(diccCarga["Total Vacaciones"])
 
 
-            except:
-                print("\n\tLegajo y vacaciones debe ser un numero.")
-                return
-        listaCarga.append(diccCarga)
-        cargar = input(f"\n\tDesea cargar otro registro? s/n: ")
+                    except:
+                        print("\n\tLegajo y vacaciones debe ser un numero.")
+                        return
+                listaCarga.append(diccCarga)
+                cargar = input(f"\n\tDesea cargar otro registro? s/n: ")
 
-    return creaArchivo(nombreNew,listaCarga)
+            return editarArchivo(nombreNew, listaCarga)
+
+
+
+        if int(menuCarga)== 2:
+            print("Menu 2 sobreescribir")
+            while cargar != "n":
+                diccCarga = {"Total Vacaciones":0}
+                for i in cabecera:
+                    diccCarga[i] = (input(f"\n\tIngrese {i}: "))
+                    try:
+                        int(diccCarga["Legajo"])
+                        int(diccCarga["Total Vacaciones"])
+
+
+                    except:
+                        print("\n\tLegajo y vacaciones debe ser un numero.")
+                        return
+                listaCarga.append(diccCarga)
+                cargar = input(f"\n\tDesea cargar otro registro? s/n: ")
+
+            return sobreescribeArchivo(nombreNew, listaCarga)
+
+
+
+
+        if int(menuCarga)== 3:
+            print("Volveos a menu principal")
+            return
+
+        else: print("No es una opcion valida de menu.. ")
+
+
+    else:
+        while cargar != "n":
+            diccCarga = {"Total Vacaciones":0}
+            for i in cabecera:
+                diccCarga[i] = (input(f"\n\tIngrese {i}: "))
+                try:
+                    int(diccCarga["Legajo"])
+                    int(diccCarga["Total Vacaciones"])
+
+
+                except:
+                    print("\n\tLegajo y vacaciones debe ser un numero.")
+                    return
+            listaCarga.append(diccCarga)
+            cargar = input(f"\n\tDesea cargar otro registro? s/n: ")
+
+        return creaArchivo(nombreNew,listaCarga)
 
 
 
