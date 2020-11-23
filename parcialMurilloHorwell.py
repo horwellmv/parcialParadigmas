@@ -19,12 +19,12 @@ def creaArchivo(nombre, lista):
 
 # ------- Funcion edita archivo con csv.DictWriter sin eliminar lo que hay previamente.
 def editarArchivo(nombre, lista):
-    cabecera = ["Legajo", "Apellido" , "Nombre" , "Total Vacaciones"]
+    cabecera = ["Legajo", "Apellido" , "Nombre" , "Total Vacaciones"] # Sigue siendo necesario el fieldnames, asi que se deja cabeceras
 
     with open(nombre, "a") as newF:
         newFile = csv.DictWriter(newF,fieldnames=cabecera)
 
-        newFile.writerows(lista)
+        newFile.writerows(lista) # Solo agrega las lineas nuevas.
 
 
     print(f"\t{nombre}.csv ha sido EDITADO con exito. ")
@@ -32,34 +32,37 @@ def editarArchivo(nombre, lista):
 
 # ------- Funcion borra y sobreescribe archivo con csv.DictWriter eliminando y reemplazando lo que hay previamente.
 
+
 def sobreescribeArchivo(nombre, lista):
     cabecera = ["Legajo", "Apellido" , "Nombre" , "Total Vacaciones"]
 
     with open(nombre, "w") as newF:
         newFile = csv.DictWriter(newF,fieldnames=cabecera)
 
-        newFile.writeheader()
-        newFile.writerows(lista)
+        newFile.writeheader() # Escribe cabeceras
+        newFile.writerows(lista) # Escribe lineas
 
 
     print(f"\t{nombre}.csv ha sido SOBREESCRITO con exito. ")
     return
 
+# ------- Funcion toma los datos para crear lista de diccionarios y valida los datos enteros antes de llamar a funcion que crea el archivo
 
 def cargarVacaciones():
     nombreNew = input("\t\nNombre para el archivo .csv: ")
-    nombreNew = f"{nombreNew}.csv"
-    cabecera = ["Legajo", "Apellido" , "Nombre" , "Total Vacaciones"]
-    listaCarga =[]
-    cargar = ""
+    nombreNew = f"{nombreNew}.csv"  # Le damos el formato .csv al nombre del archivo
+    cabecera = ["Legajo", "Apellido" , "Nombre" , "Total Vacaciones"] # Cabeceras usadas para iterar sobre los input de usuario
+    listaCarga =[] # Lista para guardar los diccionarios clave valor generados por cada vuelta de bucle for.
+    cargar = "" # Variable de control
 
-    archivoExistente = os.path.isfile(nombreNew)
-    if archivoExistente == True:
+    archivoExistente = os.path.isfile(nombreNew) # regresa valor booleano si existe el archivo con nombreNew
+
+    if archivoExistente == True: # Menu de acciones en caso de existir archivo
         print("\t\nEl archivo ya existe..")
         menuCarga = input("\t\n1: Agregar legajo. \n2: Sobreescribirlo. \n3: Volver a Menu principal \n: ")
 
         if int(menuCarga)== 1:
-            print("Menu 1 agregar legajo.")
+            print("Opcion 1:  Agregar legajo. ")
             while cargar != "n":
                 diccCarga = {"Total Vacaciones":0}
                 for i in cabecera:
@@ -80,7 +83,7 @@ def cargarVacaciones():
 
 
         if int(menuCarga)== 2:
-            print("Menu 2 sobreescribir")
+            print("Opcion 2: sobreescribir. ")
             while cargar != "n":
                 diccCarga = {"Total Vacaciones":0}
                 for i in cabecera:
@@ -102,10 +105,10 @@ def cargarVacaciones():
 
 
         if int(menuCarga)== 3:
-            print("Volveos a menu principal")
+            print("Volvemos a menu principal")
             return
 
-        else: print("No es una opcion valida de menu.. ")
+        else: print("No es una opcion valida de menu.. ") # evalua las entradas de menu archivo existente y retorna a menu principal
 
 
     else:
@@ -117,18 +120,17 @@ def cargarVacaciones():
                     int(diccCarga["Legajo"])
                     int(diccCarga["Total Vacaciones"])
 
-
                 except:
                     print("\n\tLegajo y vacaciones debe ser un numero.")
                     return
+
             listaCarga.append(diccCarga)
             cargar = input(f"\n\tDesea cargar otro registro? s/n: ")
 
         return creaArchivo(nombreNew,listaCarga)
 
 
-
-
+# ------- Funcion recibe nombre de archivo a aparear y legajo a buscar.
 
 def consultarVacaciones(archivo, basedatos,legajoBuscado):
     try:
@@ -151,23 +153,23 @@ def consultarVacaciones(archivo, basedatos,legajoBuscado):
 
             while legajo: # mietras exista linea con legajo
 
-                if legajoBuscado != legajo[0]:
-                    dia = next(datosCsv, None)
+                if legajoBuscado != legajo[0]: # buscamos coincidencia en los legajos apareados
+                    dia = next(datosCsv, None) # avanza de linea si no coincide
 
 
-                if int(legajo[0]) == legajoBuscado: # si legajo del archivo coincide con el de la busqueda
-                    empleado = (f"{legajo[2]} {legajo[1]}")
-                    vacaciones = int(legajo[3])
-                    existe = True
+                if int(legajo[0]) == legajoBuscado: # si legajo del archivo coincide
+                    empleado = (f"{legajo[2]} {legajo[1]}") # slavamos nombre de empleado
+                    vacaciones = int(legajo[3]) # Tomamos de archvo los dias a los que corresponde vacaciones
+                    existe = True # Afirma que existe el legajo.
 
                     while dia:
 
                         if int(dia[0])==legajoBuscado: # evaluo que coincide con el legajo buscado
                             print(f"tomó en fecha: {dia[1]}")
-                            vacacionesTomadas += 1  # sumo los valores que estan en el index 1 de gastos
-                        dia = next(datosCsv, None) # paso de linea en archivo gastos
+                            vacacionesTomadas += 1  # sumo un dia pot coincidencia
+                        dia = next(datosCsv, None) # avanzo de linea en archivo datosCsv
 
-                legajo = next(archivoCsv, None)
+                legajo = next(archivoCsv, None) # avanzo de linea en archivo cosnultado
 
             if existe == False:
                 print("El legajo buscado no existe.")
